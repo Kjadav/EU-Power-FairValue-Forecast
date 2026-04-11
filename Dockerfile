@@ -1,23 +1,20 @@
-# syntax=docker/dockerfile:1
-FROM python:3.12-slim AS base
+FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY pyproject.toml README.md ./
-COPY src ./src
-COPY scripts ./scripts
-COPY configs ./configs
+COPY src/ ./src/
+COPY config/ ./config/
+COPY prompts/ ./prompts/
+COPY main.py .
 
-RUN pip install --upgrade pip && pip install .
+RUN mkdir -p data/raw data/processed data/external
 
-# Default: run ingestion stub; override with docker run ... <cmd>
-CMD ["python", "scripts/run_ingestion.py"]
+ENV PYTHONPATH=/app/src
+
+CMD ["python", "main.py"]

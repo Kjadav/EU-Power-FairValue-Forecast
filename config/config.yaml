@@ -1,0 +1,35 @@
+data_vendor:
+  base_url: "https://www.smard.de/app/chart_data"
+  region: "DE-LU"
+  resolution: "hour"
+  output_dir: "data/processed/smard_bundle"
+  physical_flows:
+    enabled: true
+    resolution: "quarterhour"
+    ids:
+      - "22004629"
+      - "22004406"
+      - "22004548"
+      - "22004410"
+      - "22004552"
+      - "22004403"
+      - "22004545"
+      - "22004412"
+      - "22004553"
+      - "22004405"
+
+llm:
+  model: "gpt-4o-mini"
+  temperature: 0.2
+  max_tokens: 4096
+  min_confidence: 0.85
+  prompt_path: "prompts/quality_prompt.md"
+
+model:
+  baseline_method: "last"
+  forecast_horizon: 24
+  signal_threshold_pct: 0.02
+
+pipeline:
+  write_qa_report: true
+  llm_qa: false

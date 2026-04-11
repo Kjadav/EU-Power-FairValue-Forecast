@@ -7,11 +7,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from configs.configs import SMARD_TABLE_VALUE_COLUMNS
+from models.forecaster import PRICE_COL
 
 
 def synthetic_hourly_index(n_hours: int) -> pd.DatetimeIndex:
-    """Hourly UTC index ending at the current UTC hour (so plots match “today”, e.g. April)."""
+    """Hourly UTC index ending at the current UTC hour."""
     end = pd.Timestamp.now(tz="UTC").floor("h")
     return pd.date_range(end=end, periods=n_hours, freq="h", tz="UTC")
 
@@ -28,8 +28,7 @@ def write_synthetic_regression_bundle(path: Path, n_hours: int = 35 * 24) -> Non
     residual = load - wind - solar - hydro
     noise = rng.standard_normal(n_hours) * 8.0
     price = 50.0 + 0.002 * residual + noise
-    pc = SMARD_TABLE_VALUE_COLUMNS["day_ahead_prices"]
-    pd.DataFrame({pc: price}, index=idx).to_parquet(path / "day_ahead_prices.parquet")
+    pd.DataFrame({PRICE_COL: price}, index=idx).to_parquet(path / "day_ahead_prices.parquet")
     pd.DataFrame({"total_load_mw": load}, index=idx).to_parquet(path / "load_forecast.parquet")
     pd.DataFrame({"wind_forecast_mw": wind}, index=idx).to_parquet(path / "wind_forecast_mw.parquet")
     pd.DataFrame({"solar_forecast_mw": solar}, index=idx).to_parquet(path / "solar_forecast.parquet")

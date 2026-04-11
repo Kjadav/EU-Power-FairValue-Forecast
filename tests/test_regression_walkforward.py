@@ -8,7 +8,7 @@ import pytest
 
 from backtest.regression.synthetic_bundle import write_synthetic_regression_bundle
 from backtest.regression.walkforward import walk_forward_day_ahead_backtest
-from eu_power_forecast.forecasting.regression import fit_ols_beta, load_day_ahead_regression_panel
+from models.forecaster import fit_ols, load_regression_panel
 
 
 def test_walk_forward_backtest_completes(tmp_path: Path) -> None:
@@ -31,8 +31,8 @@ def test_walk_forward_backtest_completes(tmp_path: Path) -> None:
 
 
 def test_forecasting_regression_module_path() -> None:
-    assert callable(fit_ols_beta)
-    assert callable(load_day_ahead_regression_panel)
+    assert callable(fit_ols)
+    assert callable(load_regression_panel)
 
 
 def test_deploy_regression_backtest_artifacts(tmp_path: Path) -> None:

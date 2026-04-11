@@ -1,6 +1,6 @@
 import pandas as pd
 
-from eu_power_forecast.forecasting.validation import backtest_report
+from models.forecaster import backtest_report
 
 
 def test_backtest_report():

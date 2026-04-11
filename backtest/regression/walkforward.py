@@ -1,4 +1,4 @@
-"""Walk-forward: train OLS on all hours before day D; forecast D’s 24 hourly DA prices."""
+"""Walk-forward: train OLS on all hours before day D; forecast D's 24 hourly DA prices."""
 
 from __future__ import annotations
 
@@ -8,17 +8,17 @@ from typing import Any
 
 import pandas as pd
 
-from eu_power_forecast.forecasting.naive_baseline_model import naive_price_forecast
-from eu_power_forecast.forecasting.validation import backtest_report
-from eu_power_forecast.forecasting.regression import (
+from models.base import forecast as naive_price_forecast
+from models.forecaster import (
     PRICE_COL,
-    add_autoregressive_price_lags,
+    add_price_lags,
+    backtest_report,
     build_design_xy,
     dates_with_full_24h,
-    fit_ols_beta,
-    load_day_ahead_regression_panel,
+    fit_ols,
+    load_regression_panel,
     predict_ols,
-    row_mask_valid_xy,
+    row_mask_valid,
 )
 
 
@@ -42,9 +42,9 @@ def walk_forward_day_ahead_backtest(
     No leakage: training excludes the forecast day; lags only use past prices.
     """
     bundle_dir = Path(bundle_dir)
-    panel = add_autoregressive_price_lags(load_day_ahead_regression_panel(bundle_dir))
+    panel = add_price_lags(load_regression_panel(bundle_dir))
     X, y = build_design_xy(panel)
-    valid = row_mask_valid_xy(X, y)
+    valid = row_mask_valid(X, y)
     if not valid.any():
         raise ValueError(
             "no usable regression rows: P_{t-168} needs >168 hours of aligned hourly data "
@@ -80,7 +80,7 @@ def walk_forward_day_ahead_backtest(
         y_tr = y.loc[train_mask]
         X_fc = X.loc[fc_idx]
 
-        beta = fit_ols_beta(X_tr, y_tr)
+        beta = fit_ols(X_tr, y_tr)
         y_reg = pd.Series(predict_ols(X_fc, beta), index=fc_idx, name="regression")
 
         hist = panel.loc[panel.index < day0, PRICE_COL]
