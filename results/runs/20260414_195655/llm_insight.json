@@ -1,0 +1,22 @@
+{
+  "executive_summary": "As of 2026-04-14, the strongest signal is short prompt_week_base with edge = -28.28 EUR/MWh (z = -37.70, confidence = 0.74). Model backtest MAE = 10.7 EUR/MWh.",
+  "outright_views": [
+    "SHORT prompt_week_base: edge=-28.28, z=-37.70, conf=0.74, FV=73.21, mkt=101.49",
+    "SHORT prompt_week_peak: edge=-46.49, z=-35.44, conf=0.74, FV=61.85, mkt=108.34"
+  ],
+  "shape_views": [],
+  "why_now": "Signal payload generated on 2026-04-14 for DE-LU.",
+  "what_the_desk_would_do": "Consider short prompt_week_base",
+  "key_risks": [
+    "No active invalidation triggers."
+  ],
+  "invalidation_triggers": [
+    "None active."
+  ],
+  "what_would_change_the_view": "Large shift in fundamental forecasts or market forward repricing.",
+  "confidence_notes": "Model q10\u2013q90 coverage = 66.0%.",
+  "data_quality_notes": "Backtest: 16632 OOF hours, 96 folds.",
+  "questions_for_trader": "Do you have a view on upcoming policy or weather events?",
+  "source": "deterministic_fallback",
+  "error": null
+}

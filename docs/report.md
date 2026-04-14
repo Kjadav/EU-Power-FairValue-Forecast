@@ -2,9 +2,28 @@ Karan Jadav | [karanjadav895@gmail.com](mailto:karanjadav895@gmail.com)
 
 This report is intended for documenting this project that is a prototype that produces daily fair-value day-ahead pricing, mined from the fundamentals, looking at the relationships between those different fundamentals to derive a curve positioning and decisions.
 
-High-Level overview of the Project:
+In creating this pipeline, assistance from AI was used. Tests were creating using the LLM model, which I believe we can also use LLM to be able to write tests, and have human-in-the-loop to be able to verify that the test functions are testing what our original functions are designed for. 
 
-High-level project overview
+
+The model i used was LightGBM due to the simplicity and efficiency that it provides when it comes to creating a strong predictive models using our fundamentals dataset that we have, being day-ahead prices, forecasted v actual loads. It provides advantes in speed, memory efficiency and helping to combat outliers should there be any past the validations. Naivse baseline model is not a model that i would use to create my final forecasts but a tool to build my forecasts off. It provides the analytical image to be able to compare the pricing on same days different weeks. It allows for the desk to compare, analyse and see what caused those surges and drops in pricing. 
+
+Evaluation of Results:
+On the day-ahead hourly pricing we see that the price forecasted is shown to be above average from 0100 to 0800, likely from the lack of power via renewables especially due to Germanys view on renewables and lack of nucleur energy. There would a slight sure in power from everyday appliances being used in morning routines. Pricing decreases which in my opinion is due to the increase in renewable energy surge, overboard of pwoer from neighbouring countries, which DE has a partnership with. This brings powers below average. As the evening approaches, 1800, more light is needed, through the country, impacts all countries. Demand for power is higher, renewables is unreliable. Price increases above average. 
+
+I believe we could add more fundamentals into this, such as additional fundamentals when forecasting. Evaluating the accurqacy of the forecasts of loads, what type of weather forecast there is to predict the load produced from renewables as DE is reliant and motivated on a net-zero country. 
+
+In comparison to the week-average, there is a positive outlook on pricing. Pricing is to be increasing, when we compare to the market outlook where our confidence signals are built off. 
+
+The main points the desk could really expand on are:
+
+- weather forecasting, its accuracy, any major forecasts to come
+- consider the countries goals and outlook on energy usage, i.e renewables, oil heavy etc
+- macro political events taking place - such as IRAN-US WAR
+- are the signal produced unrealistic, is there a large spread?
+
+High level diagram of the code infrastructure:
+
+
 
 1. Data Ingestion:
 
@@ -41,11 +60,7 @@ Preset Rules:
     -> Non-negative values except day-ahead prices
     -> Generic Validation checks : row count, missing %, duplications
 
-LLM Validation:
-    -> Uses gemini to produce validation report
-    -> A prompt template : that instructed to ingest data, flag anomolies,      outliers, 
-    -> Provide confidence score and .json result file
-```
+**LLM validation:** A templated prompt reviews bundle summaries, flags anomalies and outliers, and returns structured JSON with a confidence score.
 
 1. Data Transformation & Formatting:
 

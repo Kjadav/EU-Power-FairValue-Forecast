@@ -1,0 +1,54 @@
+{
+  "as_of_date": "2026-04-14",
+  "market_name": "DE-LU",
+  "outright_signals": [
+    {
+      "product": "prompt_week_base",
+      "direction": "short",
+      "edge": -28.28,
+      "edge_z": -37.7,
+      "confidence": 0.736,
+      "signal_score": -0.736,
+      "fair_value": 73.21,
+      "market_forward": 101.49,
+      "std": 0.75,
+      "p10": 72.26,
+      "p50": 73.23,
+      "p90": 74.11,
+      "risk_premium_proxy": 28.28,
+      "translation_method": "direct_pathwise",
+      "translation_quality": "direct",
+      "invalidation_flag": false,
+      "invalidation_reasons": []
+    },
+    {
+      "product": "prompt_week_peak",
+      "direction": "short",
+      "edge": -46.49,
+      "edge_z": -35.44,
+      "confidence": 0.736,
+      "signal_score": -0.736,
+      "fair_value": 61.85,
+      "market_forward": 108.34,
+      "std": 1.31,
+      "p10": 60.18,
+      "p50": 61.83,
+      "p90": 63.48,
+      "risk_premium_proxy": 46.49,
+      "translation_method": "direct_pathwise",
+      "translation_quality": "direct",
+      "invalidation_flag": false,
+      "invalidation_reasons": []
+    }
+  ],
+  "shape_signals": [],
+  "backtest_summary": {
+    "overall_mae_eur_mwh": 10.74,
+    "overall_rmse_eur_mwh": 23.89,
+    "q10_q90_coverage": 0.66,
+    "n_oof_hours": 16632,
+    "n_folds": 96,
+    "fold_mae_mean": 10.46,
+    "fold_mae_std": 5.43
+  }
+}

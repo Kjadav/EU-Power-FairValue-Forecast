@@ -1,0 +1,2 @@
+Short prompt_week_base because translated fair value is 37.7 sigma below market and market trades near model p90.
+Short prompt_week_peak because translated fair value is 35.4 sigma below market and market trades near model p90.
