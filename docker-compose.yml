@@ -4,13 +4,9 @@ services:
     image: eu-power-fairvalue-forecast:local
     working_dir: /app
     volumes:
-      - ./configs:/app/configs:ro
+      - ./config:/app/config:ro
       - ./data:/app/data
-      - ./scripts:/app/scripts:ro
-      - ./prompts:/app/prompts:ro
     env_file:
       - path: .env
         required: false
-    # Override for notebooks, pytest, etc.:
-    # command: ["sleep", "infinity"]
-    command: ["python", "scripts/run_ingestion.py"]
+    command: ["python", "main.py"]

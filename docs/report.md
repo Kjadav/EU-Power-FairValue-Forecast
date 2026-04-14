@@ -1,0 +1,117 @@
+Karan Jadav | [karanjadav895@gmail.com](mailto:karanjadav895@gmail.com)
+
+This report is intended for documenting this project that is a prototype that produces daily fair-value day-ahead pricing, mined from the fundamentals, looking at the relationships between those different fundamentals to derive a curve positioning and decisions.
+
+High-Level overview of the Project:
+
+High-level project overview
+
+1. Data Ingestion:
+
+The [SMARD](https://smard.api.bund.dev/) API is used to extract data from the SMARD Database ([https://www.smard.de/en/downloadcenter/download-market-data/](https://www.smard.de/en/downloadcenter/download-market-data/)). 
+
+I utilised the filters that was previously laid out by another contributor ([https://github.com/bundesAPI/smard-api](https://github.com/bundesAPI/smard-api)). Each series is identified by a `filter_id`.
+
+The series that I had utilised:
+
+
+| Table                                | Filter ID(s)                            | Column                               |
+| ------------------------------------ | --------------------------------------- | ------------------------------------ |
+| `day_ahead_prices`                   | 4169                                    | `day_ahead_price_eur_mwh`            |
+| `load_forecast`                      | 410                                     | `total_load_mw`                      |
+| `wind_forecast_mw`                   | 123 + 3791 (onshore + offshore, summed) | `wind_forecast_mw`                   |
+| `solar_forecast`                     | 125                                     | `solar_forecast_mw`                  |
+| `hydro_forecast`                     | 715                                     | `hydro_forecast_mw`                  |
+| `wind_generation_actual_mw`          | 4067 + 1225 (summed)                    | `wind_generation_actual_mw`          |
+| `solar_generation_actual_mw`         | 4068                                    | `solar_generation_actual_mw`         |
+| `actual_generation_total_mw`         | 12 carrier filters (summed)             | `actual_generation_total_mw`         |
+| `hydro_pumped_storage_generation_mw` | 4070                                    | `hydro_pumped_storage_generation_mw` |
+
+
+** Wind = on-shore wind + off-shore wind
+
+ Data Quality
+
+```
+The validation has 2 phases: preset rules + LLM validations. 
+
+Preset Rules: 
+    -> UTC Timezone conversion, no duplicate timings
+    -> Hourly Data oNly
+    -> Non-negative values except day-ahead prices
+    -> Generic Validation checks : row count, missing %, duplications
+
+LLM Validation:
+    -> Uses gemini to produce validation report
+    -> A prompt template : that instructed to ingest data, flag anomolies,      outliers, 
+    -> Provide confidence score and .json result file
+```
+
+1. Data Transformation & Formatting:
+
+Focus point : src/forecasting.loader.py --> load_smard_bundle_hourly():
+
+This is to load the parquet files, cleaning it, enforcing it to be hourly and create a dataframe that is to be used. 
+
+1. Feature Engineering;
+
+Price is transformed using sinh - price/scale to account for negative pricing. More details specific to the model below.
+
+1. Model Applied:
+  1. Base Model : Seasonal Naive Model
+    Looks at pricing at the same time for historical pricing, and compares the similarity. 
+     We can take it step further to compare the forecast v actual at those times. 
+     We can also look at the amount of production of electricity that is generated for the different sources. 
+     (Note: this isn't part of the forecast.)
+  2. Forecasting Mode
+    Model used: LightGBM Regression Model
+     Prices transformed: 
+     `build_feature_matrix()` in feature/engineering.py :: 
+     Features are built for the purpose of training the model, such as fundamental loads;
+    - load (wind/solar/hydro)
+    - volatility
+     Weights : TO-DO
+     Training the LightGBM model with the hisotrical data that is loaded in
+     Then we use .predict to create the pricing for one future hour at a time
+
+Using the model that we have trained and recurssion to be able to get pricing for next day hourly pricing, apply for the next day 24hr period to create the day-ahead forecast. 
+
+Next-Week Average Pricing Distribution
+
+We take the baseline of the forecast for every hour for next-day, we create simulations for around that. 
+
+Firstly, calculate the vol for the forecast/hr, by using historical residuals from the training grouped by hours/day. 
+This is similar to how the naive model was, using hours for same day. From this we genereate teh possible price paths. 
+
+ProducesL: 
+-> weekly peakload metrics
+    (for every week, compute average for all hours, and average over peak hours)
+
+1. Market Curve
+
+We build the forecast week distribution by looking at the different simulations we had undertook for the pricing in those hours throughout the week, calculating the average of it.
+
+1. Confidence-Weighted Signal:
+
+This is generated by comparing the 2 prices, the current market forward price and the model-implied fair value for that period. The model we had forcasted future prices, and aggregaates them. The comparison between mkt currnet price and fair value to produce a signal. 
+
+It measures how large the pricing edge is relative to uncertainty. There are 4 factors that judges the confidence:
+
+-Reduces confidence if historical forecasting performance is weak
+-Reduces confidence if the fair-value translation from forecast to product price is unstable or low quality
+-Reduces confidence if the product is only partially supported by the forecast/scenario distribution
+-Gives more weight when the market price sits in the tails of the forecast distribution, and less when it is near the center
+
+1. Reporting & LLM integration
+
+CSV and Plots are created for the pricing and forecasts. 
+
+The LLM used is Gemini. The prompt is given, where ist is required to looks at the data and results that is created. 
+
+The prompt outlines th following:
+
+```
+You are a quantitative power trading desk analyst. Use ONLY the numbers supplied. Do not invent prices. Output valid JSON.
+User: JSON payload, requested schema with 11 fields
+The output has detailed summary, analysis, confidence scores and points that the trading desk could consider.
+```

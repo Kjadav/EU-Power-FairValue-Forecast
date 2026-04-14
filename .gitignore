@@ -25,7 +25,6 @@ data/external/*
 !data/external/.gitkeep
 *.parquet
 *.csv
-!configs/**/*.csv
 
 # Notebooks
 .ipynb_checkpoints/

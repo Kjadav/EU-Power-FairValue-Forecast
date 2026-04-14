@@ -1,0 +1,73 @@
+logging_level: INFO
+
+data_vendor:
+  type: smard
+  base_url: https://www.smard.de/app/chart_data
+  region: DE-LU
+  resolution: hour
+  # placing smard files together to create a long history for training light model
+  smard_min_history_hours: 17520
+  smard_max_index_chunks: 200
+  physical_flow_resolution: quarterhour
+  include_physical_flows: false
+  on_physical_flow_error: skip
+  meta_filename: _smard_bundle_meta.json
+  solar_generation_actual_filter: "4068"
+  generation_pumped_storage_filter: "4070"
+  realized_generation_carrier_filters:
+    - "1223"
+    - "1224"
+    - "1225"
+    - "1226"
+    - "1227"
+    - "1228"
+    - "4066"
+    - "4067"
+    - "4068"
+    - "4069"
+    - "4070"
+    - "4071"
+  default_physical_flow_ids: []
+  physical_flow_value_column: physical_flow_mw
+  bundle_single_series:
+    day_ahead_prices:
+      filter_id: "4169"
+    load_forecast:
+      filter_id: "410"
+    solar_forecast:
+      filter_id: "125"
+    hydro_forecast:
+      filter_id: "715"
+  wind_forecast_sources:
+    - filter_id: "123"
+      label: onshore
+    - filter_id: "3791"
+      label: offshore
+  wind_generation_sources:
+    - filter_id: "4067"
+      label: onshore
+    - filter_id: "1225"
+      label: offshore
+  table_value_columns:
+    day_ahead_prices: day_ahead_price_eur_mwh
+    load_forecast: total_load_mw
+    solar_forecast: solar_forecast_mw
+    hydro_forecast: hydro_forecast_mw
+    wind_generation_actual_mw: wind_generation_actual_mw
+    solar_generation_actual_mw: solar_generation_actual_mw
+    actual_generation_total_mw: actual_generation_total_mw
+    hydro_pumped_storage_generation_mw: hydro_pumped_storage_generation_mw
+
+llm:
+  provider: gemini
+  model: gemini-2.5-flash
+  temperature: 0.2
+  max_tokens: 1024
+  timeout_seconds: 90
+  min_confidence_enforced: 0.85
+
+pipeline:
+  output_dir: data/processed/smard_bundle
+  forecast_horizon_hours: 24
+  naive_method: seasonal_24h
+  signal_threshold_fraction: 0.02

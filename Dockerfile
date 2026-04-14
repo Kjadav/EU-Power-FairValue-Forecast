@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.12-slim AS base
+FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -12,12 +12,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml README.md ./
+COPY requirements.txt pyproject.toml README.md ./
 COPY src ./src
-COPY scripts ./scripts
-COPY configs ./configs
+COPY config ./config
+COPY main.py ./
 
-RUN pip install --upgrade pip && pip install .
+RUN pip install --upgrade pip \
+    && pip install -r requirements.txt \
+    && pip install . --no-deps
 
-# Default: run ingestion stub; override with docker run ... <cmd>
-CMD ["python", "scripts/run_ingestion.py"]
+CMD ["python", "main.py"]
