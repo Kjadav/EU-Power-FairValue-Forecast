@@ -16,6 +16,34 @@ from trading_pipeline_utils.llm.schemas import LLMInsightResult
 
 logger = logging.getLogger(__name__)
 
+_SENSITIVE_JSON_KEYS: frozenset[str] = frozenset(
+    {
+        "api_key",
+        "password",
+        "secret",
+        "token",
+        "security_token",
+        "authorization",
+        "refresh_token",
+    }
+)
+
+def _redact_secrets(obj: Any) -> Any:
+    """Return a deep copy with sensitive dict keys nulled (for config / payload snapshots)."""
+    if isinstance(obj, dict):
+        out: dict[str, Any] = {}
+        for k, v in obj.items():
+            if str(k).lower() in _SENSITIVE_JSON_KEYS:
+                out[k] = None
+            else:
+                out[k] = _redact_secrets(v)
+        return out
+    if isinstance(obj, list):
+        return [_redact_secrets(x) for x in obj]
+    if isinstance(obj, tuple):
+        return tuple(_redact_secrets(x) for x in obj)
+    return obj
+
 
 def create_run_directory(base_dir: Path) -> Path:
     """Create a timestamped run directory under ``results/runs/``."""
@@ -40,9 +68,10 @@ def update_latest_symlink(base_dir: Path, run_dir: Path) -> None:
 
 
 def save_config_snapshot(run_dir: Path, config: Any) -> Path:
-    """Save the config used for this run."""
+    """Save the config used for this run (API keys and similar fields are stripped)."""
     path = run_dir / "config_snapshot.json"
-    data = asdict(config) if hasattr(config, '__dataclass_fields__') else config
+    data = asdict(config) if hasattr(config, "__dataclass_fields__") else config
+    data = _redact_secrets(data)
     path.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
     return path
 
@@ -58,10 +87,11 @@ def save_dataframe(run_dir: Path, filename: str, df: pd.DataFrame, *, fmt: str =
 
 
 def save_json(run_dir: Path, filename: str, data: Any) -> Path:
-    """Save a dict/object as JSON."""
+    """Save a dict/object as JSON (secrets redacted the same way as config snapshots)."""
     path = run_dir / filename
-    if hasattr(data, '__dataclass_fields__'):
+    if hasattr(data, "__dataclass_fields__"):
         data = asdict(data)
+    data = _redact_secrets(data)
     path.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
     return path
 

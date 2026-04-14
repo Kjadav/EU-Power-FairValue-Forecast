@@ -26,6 +26,10 @@ data/external/*
 *.parquet
 *.csv
 
+# Example / pinned pipeline runs (override blanket CSV/parquet ignores above)
+!/results/**/*.csv
+!/results/**/*.parquet
+
 # Notebooks
 .ipynb_checkpoints/
 

@@ -1,0 +1,2 @@
+Long prompt_week_peak because translated fair value is 10.3 sigma above market and market trades near model p10.
+Long prompt_week_base because translated fair value is 1.0 sigma above market and market trades near model p19.

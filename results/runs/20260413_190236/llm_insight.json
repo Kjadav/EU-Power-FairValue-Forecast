@@ -1,0 +1,22 @@
+{
+  "executive_summary": "As of 2026-04-13, the strongest signal is long prompt_week_peak with edge = +13.50 EUR/MWh (z = +10.29, confidence = 0.74). Model backtest MAE = 10.7 EUR/MWh.",
+  "outright_views": [
+    "LONG prompt_week_peak: edge=+13.50, z=+10.29, conf=0.74, FV=61.85, mkt=48.35",
+    "LONG prompt_week_base: edge=+0.72, z=+0.96, conf=0.21, FV=73.21, mkt=72.49"
+  ],
+  "shape_views": [],
+  "why_now": "Signal payload generated on 2026-04-13 for DE-LU.",
+  "what_the_desk_would_do": "Consider long prompt_week_peak",
+  "key_risks": [
+    "No active invalidation triggers."
+  ],
+  "invalidation_triggers": [
+    "None active."
+  ],
+  "what_would_change_the_view": "Large shift in fundamental forecasts or market forward repricing.",
+  "confidence_notes": "Model q10\u2013q90 coverage = 66.0%.",
+  "data_quality_notes": "Backtest: 16632 OOF hours, 96 folds.",
+  "questions_for_trader": "Do you have a view on upcoming policy or weather events?",
+  "source": "deterministic_fallback",
+  "error": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+}

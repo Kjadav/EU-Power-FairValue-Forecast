@@ -1,0 +1,16 @@
+{
+  "run_dir": "/Users/karanjadav/Cobblestone/results/runs/20260413_190236",
+  "stages": {
+    "fetch_data": "skipped (using data/processed/smard_bundle)",
+    "validate_data": "ok=False",
+    "run_forecasts": "ok",
+    "reference_forwards": "prompt_week_base=72.49, prompt_week_peak=48.35",
+    "translate_curve": "2 products",
+    "generate_signals": "2 signals",
+    "invalidations": "0/2 flagged",
+    "generate_reports": "ok",
+    "llm_summary": "source=deterministic_fallback"
+  },
+  "llm_source": "deterministic_fallback",
+  "executive_summary": "As of 2026-04-13, the strongest signal is long prompt_week_peak with edge = +13.50 EUR/MWh (z = +10.29, confidence = 0.74). Model backtest MAE = 10.7 EUR/MWh."
+}
